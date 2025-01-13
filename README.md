@@ -51,7 +51,7 @@ Youdemy est une plateforme d'apprentissage en ligne conçue pour offrir une exp�
 
 ## Installation
 
-1. Clonez le dépôt sur votre machine locale.
+1. Clonez le dépôt sur votre machine locale 😀
    
    ```bash
    git clone https://github.com/rayan4-dot/Youdemy
