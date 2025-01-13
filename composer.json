@@ -1,0 +1,15 @@
+{
+    "name": "rayan/youdemy",
+    "autoload": {
+        "psr-4": {
+            "Rayan\\Youdemy\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "rayan4-dot",
+            "email": "rayanpro2023@gmail.com"
+        }
+    ],
+    "require": {}
+}
