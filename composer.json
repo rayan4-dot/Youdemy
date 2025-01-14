@@ -2,7 +2,7 @@
     "name": "rayan/youdemy",
     "autoload": {
         "psr-4": {
-            "Rayan\\Youdemy\\": "src/"
+            "App\\": "app/"
         }
     },
     "authors": [
