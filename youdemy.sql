@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 13, 2025 at 04:03 PM
+-- Generation Time: Jan 14, 2025 at 08:14 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -49,17 +49,6 @@ CREATE TABLE `Courses` (
   `category_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `CourseTags`
---
-
-CREATE TABLE `CourseTags` (
-  `course_id` int(11) NOT NULL,
-  `tag_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -122,13 +111,6 @@ ALTER TABLE `Courses`
   ADD PRIMARY KEY (`course_id`),
   ADD KEY `teacher_id` (`teacher_id`),
   ADD KEY `category_id` (`category_id`);
-
---
--- Indexes for table `CourseTags`
---
-ALTER TABLE `CourseTags`
-  ADD PRIMARY KEY (`course_id`,`tag_id`),
-  ADD KEY `tag_id` (`tag_id`);
 
 --
 -- Indexes for table `Enrollments`
@@ -196,13 +178,6 @@ ALTER TABLE `Users`
 ALTER TABLE `Courses`
   ADD CONSTRAINT `courses_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `Users` (`user_id`),
   ADD CONSTRAINT `courses_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `Categories` (`category_id`);
-
---
--- Constraints for table `CourseTags`
---
-ALTER TABLE `CourseTags`
-  ADD CONSTRAINT `coursetags_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `Courses` (`course_id`),
-  ADD CONSTRAINT `coursetags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `Tags` (`tag_id`);
 
 --
 -- Constraints for table `Enrollments`
