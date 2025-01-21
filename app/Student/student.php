@@ -25,9 +25,6 @@ $db = new Database();
 $conn = $db->getConnection();
 
 
-
-
-
 $sqlStudent = "SELECT username FROM users WHERE user_id = :user_id";
 $stmtStudent = $conn->prepare($sqlStudent);
 $stmtStudent->bindParam(':user_id', $user_id);
@@ -67,7 +64,7 @@ $enrolledCourses = $stmtEnrolledCourses->fetchAll(PDO::FETCH_ASSOC);
         </nav>
     </div>
 
-    <!-- Main Content -->
+
     <div class="flex-1">
         <!-- Header -->
         <header class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
@@ -75,9 +72,9 @@ $enrolledCourses = $stmtEnrolledCourses->fetchAll(PDO::FETCH_ASSOC);
             <a href="../Authentication/logout.php?action=logout" class="bg-red-500 text-white py-2 px-4 rounded-lg">Logout</a>
         </header>
 
-        <!-- Main Content Area -->
+
         <main class="p-6 space-y-12">
-            <!-- Enrolled Courses Section -->
+
             <section id="enrolled-courses">
                 <h2 class="text-3xl font-bold mb-6">Enrolled Courses</h2>
                 <?php if ($enrolledCourses): ?>
