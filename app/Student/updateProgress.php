@@ -17,11 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     $allowedProgress = ['not_started', 'in_progress', 'completed'];
-    if (!in_array($progress, $allowedProgress)) {
-        die('Invalid progress value.');
-    }
-
-
     $sqlUpdate = "UPDATE enrollments SET progress = :progress WHERE student_id = :student_id AND course_id = :course_id";
     $stmtUpdate = $conn->prepare($sqlUpdate);
     $stmtUpdate->bindParam(':progress', $progress);
