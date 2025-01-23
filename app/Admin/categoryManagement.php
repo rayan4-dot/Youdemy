@@ -184,9 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   <div class="sidebar">
     <h2 class="text-white text-3xl font-bold text-center mb-12">Admin Dashboard</h2>
     <a href="dashboard.php">Home</a>
-    <a href="validate.php">Account Validation</a>
     <a href="teacherManagement.php">Teacher Management</a>
-    <a href="userManagement.php">User Management</a>
     <a href="#">Student Management</a>
     <a href="courseManagement.php">Course Management</a>
     <a href="categoryManagement.php" class="active">Categories</a>

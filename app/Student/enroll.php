@@ -7,32 +7,34 @@ use App\Config\Database;
 $db = new Database();
 $conn = $db->getConnection();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$student_id = $_SESSION['user_id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course_id'])) {
     $course_id = $_POST['course_id'];
-    $student_id = $_SESSION['user_id'];
 
 
-    $sqlCheck = "SELECT * FROM enrollments WHERE student_id = :student_id AND course_id = :course_id";
-    $stmt = $conn->prepare($sqlCheck);
-    $stmt->bindParam(':student_id', $student_id);
-    $stmt->bindParam(':course_id', $course_id);
-    $stmt->execute();
+    $checkSql = "SELECT * FROM enrollments WHERE student_id = :student_id AND course_id = :course_id";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+    $checkStmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+    $checkStmt->execute();
 
-    if ($stmt->rowCount() > 0) {
-        echo json_encode(["status" => "error", "message" => "Already enrolled."]);
-        exit;
+    if ($checkStmt->rowCount() === 0) {
+
+        $sql = "INSERT INTO enrollments (student_id, course_id) VALUES (:student_id, :course_id)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+        $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+        $stmt->execute();
     }
 
 
-    $sqlEnroll = "INSERT INTO enrollments (student_id, course_id, progress) VALUES (:student_id, :course_id, 'not_started')";
-    $stmt = $conn->prepare($sqlEnroll);
-    $stmt->bindParam(':student_id', $student_id);
-    $stmt->bindParam(':course_id', $course_id);
-
-    if ($stmt->execute()) {
-        echo json_encode(["status" => "success", "message" => "Enrolled successfully."]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Enrollment failed."]);
-    }
+    header("Location: courses.php?course_id=$course_id");
+    exit;
 }
 ?>

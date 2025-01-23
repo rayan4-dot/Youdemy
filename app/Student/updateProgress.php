@@ -4,7 +4,6 @@ require_once __DIR__ . '/../config/database.php';
 
 
 use App\Config\Database;
-use App\Models\Certification;
 
 $db = new Database();
 $conn = $db->getConnection();

@@ -1,3 +1,32 @@
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
+require_once '../Youdemy/app/config/Database.php'; 
+use App\Config\Database;
+
+try {
+    $conn = new Database(); 
+    $db = $conn->getConnection();
+
+
+    $sql_courses = "SELECT courses.*, categories.name AS category_name
+                    FROM courses
+                    INNER JOIN categories ON courses.category_id = categories.category_id
+                    WHERE courses.status = 'active'";
+    $stmt = $db->prepare($sql_courses);
+    $stmt->execute();
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error fetching courses: " . $e->getMessage();
+    die();
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +46,77 @@
     <link rel="stylesheet" href="assets/css/templatemo-grad-school.css">
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/lightbox.css">
+<style>
+    /* General carousel item styles */
+/* General carousel item styles */
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    overflow: hidden;
+    width: 100%; /* Ensure it fits properly */
+    max-width: 320px; /* Set a max width for consistency */
+}
+
+.course-media {
+    width: 100%;
+    height: 250px; /* Set a height for the video */
+    margin-bottom: 15px; /* Add some spacing between the video and content */
+    border-radius: 8px;
+    overflow: hidden; /* To keep the video within bounds */
+}
+
+.course-video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px; /* Rounded corners for the video */
+}
+
+.down-content {
+    padding: 20px; /* Consistent padding */
+    background-color: #fff;
+    border-radius: 8px; /* Smooth rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for the content box */
+    color: #333; /* Ensure text is dark enough to be readable */
+}
+
+.down-content h4 {
+    font-size: 1.25rem; /* Larger title */
+    font-weight: bold;
+    color: #007bff; /* Blue color for the title */
+    margin-bottom: 10px; /* Space between title and description */
+}
+
+.down-content p {
+    font-size: 1rem;
+    color: #666; /* Light gray color for descriptions */
+    margin-bottom: 10px; /* Space after the paragraph */
+}
+
+.text-button-pay a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.text-button-pay a:hover {
+    background-color: #0056b3;
+}
+
+</style>
 </head>
 
 <body>
@@ -34,14 +134,14 @@
                     <a href="#section2">Courses</a>
                     <ul class="sub-menu">
                         <li><a href="#section3">Categories</a></li>
-                        <li><a href="#section4">Popular Courses</a></li>
                     </ul>
                 </li>
                 <li><a href="#section7">Teachers</a></li> <!-- Teachers link -->
                 <li><a href="#section6">Contact</a></li> <!-- Contact link -->
-                <li><a href="../Youdemy/app/auth/login.php">Login</a></li>
+                <li><a href="../Youdemy/app/Authentication/login.php">Login</a></li>
             </ul>
         </nav>
+
     </header>
 
     <!-- ***** Main Banner Area Start ***** -->
@@ -165,7 +265,7 @@
     </section>
 
  <!-- ***** Courses Section ***** -->
-<section class="section courses" data-section="section3">
+ <section class="section courses" data-section="section3">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -174,31 +274,37 @@
                 </div>
             </div>
             <div class="owl-carousel owl-theme">
-                <div class="item">
-                    <img src="assets/images/courses-01.jpg" alt="Course #1">
-                    <div class="down-content">
-                        <h4>Digital Marketing</h4>
-                        <p>Learn the key strategies of digital marketing to grow your business.</p>
-                        <div class="text-button-pay">
-                            <a href="#">Enroll Now <i class="fa fa-angle-double-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <img src="assets/images/courses-02.jpg" alt="Course #2">
-                    <div class="down-content">
-                        <h4>Web Development</h4>
-                        <p>Master the skills needed to build and manage your own websites.</p>
-                        <div class="text-button-free">
-                            <a href="#">Enroll Now <i class="fa fa-angle-double-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Additional course items can be added here -->
+                <?php foreach ($courses as $course): ?>
+           <div class="item">
+    <div class="course-media">
+        <?php if (!empty($course['image_path'])): ?>
+            <!-- Render course image -->
+            <img class="course-image" src="../app/uploads/<?= htmlspecialchars($course['image_path']) ?>" alt="<?= htmlspecialchars($course['title']) ?>">
+        <?php elseif (!empty($course['video_url'])): ?>
+            <!-- Render course video -->
+            <iframe class="course-video" src="<?= htmlspecialchars($course['video_url']) ?>" frameborder="0" allowfullscreen></iframe>
+        <?php else: ?>
+            <!-- Fallback: Default image -->
+            <img class="course-image" src="assets/images/default-course.jpg" alt="Default Course">
+        <?php endif; ?>
+    </div>
+    <div class="down-content">
+        <h4><?= htmlspecialchars($course['title']) ?></h4>
+        <p><?= htmlspecialchars($course['description']) ?></p>
+        <p><strong>Category:</strong> <?= htmlspecialchars($course['category_name']) ?></p>
+        <div class="text-button-pay">
+            <a href="../Youdemy/app/Authentication/login.php">Enroll Now <i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div>
+</div>
+
+
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- ***** Teacher Section ***** -->
 <section class="teacher_section layout_padding-bottom">
