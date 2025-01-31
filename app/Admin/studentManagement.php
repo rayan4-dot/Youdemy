@@ -61,6 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
         /* Shared styles */
         .card {
@@ -246,6 +248,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .dark-mode tr:hover {
             background-color: #4a5568;
         }
+        #logout{
+            margin-left: 420%;
+
+        }
     </style>
 </head>
 
@@ -266,10 +272,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="main-content">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Student Management</h1>
+            <a href="../Authentication/Auth.php?action=logout">
+                <button id="logout" class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-md text-lg font-semibold">Logout</button>
+            </a>
             <!-- Dark Mode Toggle -->
-            <button id="dark-mode-toggle" class="bg-gray-800 text-white px-4 py-2 rounded-md">
-                Toggle Dark Mode
-            </button>
+            <button 
+    id="dark-mode-toggle" 
+    class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700" 
+    aria-label="Toggle dark mode">
+    <i id="mode-icon-moon" class="fas fa-moon" aria-hidden="true"></i>
+    <i id="mode-icon-brightness" class="fa-solid fa-sun" style="display: none;" aria-hidden="true"></i>
+</button>
+
         </div>
 
         <section class="mb-8">
@@ -306,14 +320,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <script>
-        // Dark mode toggle functionality
-        const toggleButton = document.getElementById('dark-mode-toggle');
-        const body = document.getElementById('body');
+// Dark mode toggle functionality
+const toggleButton = document.getElementById('dark-mode-toggle');
+const body = document.getElementById('body');
+const modeIconMoon = document.getElementById('mode-icon-moon');
+const modeIconBrightness = document.getElementById('mode-icon-brightness');
 
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            body.classList.toggle('light-mode');
-        });
+toggleButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    body.classList.toggle('light-mode');
+
+    // Toggle the icon
+    if (body.classList.contains('dark-mode')) {
+        modeIconMoon.style.display = 'none';
+        modeIconBrightness.style.display = 'block';
+    } else {
+        modeIconMoon.style.display = 'block';
+        modeIconBrightness.style.display = 'none';
+    }
+});
     </script>
 
 </body>

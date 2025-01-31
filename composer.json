@@ -11,5 +11,7 @@
             "email": "rayanpro2023@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "tecnickcom/tcpdf": "^6.8"
+    }
 }

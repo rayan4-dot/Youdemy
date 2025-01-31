@@ -46,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Udemy Admin Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* Custom styles for Dark and Light mode */
@@ -251,5 +253,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   </div>
 
 </body>
+
+<script>
+  // Dark mode toggle functionality
+const toggleButton = document.getElementById('dark-mode-toggle');
+const body = document.getElementById('body');
+const modeIconMoon = document.getElementById('mode-icon-moon');
+const modeIconBrightness = document.getElementById('mode-icon-brightness');
+
+toggleButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    body.classList.toggle('light-mode');
+
+    // Toggle the icon
+    if (body.classList.contains('dark-mode')) {
+        modeIconMoon.style.display = 'none';
+        modeIconBrightness.style.display = 'block';
+    } else {
+        modeIconMoon.style.display = 'block';
+        modeIconBrightness.style.display = 'none';
+    }
+});
+</script>
 
 </html>

@@ -13,6 +13,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
 }
 
 
+
 $user_id = $_SESSION['user_id'];
 
 
@@ -52,6 +53,7 @@ $enrolledCourses = $stmtEnrolledCourses->fetchAll(PDO::FETCH_ASSOC);
     <title>Student Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100">
 <div class="flex">
     <!-- Sidebar -->
@@ -74,40 +76,64 @@ $enrolledCourses = $stmtEnrolledCourses->fetchAll(PDO::FETCH_ASSOC);
 
 
         <main class="p-6 space-y-12">
-
-            <section id="enrolled-courses">
-                <h2 class="text-3xl font-bold mb-6">Enrolled Courses</h2>
-                <?php if ($enrolledCourses): ?>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <?php foreach ($enrolledCourses as $course): 
-                            $progress = isset($course['progress']) ? $course['progress'] : 'not_started';
-                        ?>
-                            <div class="bg-white shadow-md rounded-lg p-4">
-                                <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($course['title']); ?></h3>
-                                <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($course['description']); ?></p>
-                                <div class="mb-4">
-                                    <p class="font-semibold">Progress: <?php echo ucfirst($progress); ?></p>
-                                    <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
-                                        <div class="bg-green-500 h-4 rounded-full"
-                                             style="width: <?php echo $progress === 'completed' ? '100%' : ($progress === 'in_progress' ? '50%' : '0%'); ?>;"></div>
-                                    </div>
+        <section id="enrolled-courses" class="py-8 bg-gray-100">
+    <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Enrolled Courses</h2>
+        
+        <?php if ($enrolledCourses): ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php foreach ($enrolledCourses as $course): 
+                    $progress = isset($course['progress']) ? $course['progress'] : 'not_started';
+                ?>
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">
+                                <a href="../Teacher/courseDetail.php?course_id=<?= htmlspecialchars($course['course_id']); ?>" class="text-blue-600 hover:underline">
+                                    <?php echo htmlspecialchars($course['title']); ?>
+                                </a>
+                            </h3>
+                            <p class="text-gray-700 mb-4"><?php echo htmlspecialchars($course['description']); ?></p>
+                            
+                            <!-- Progress Section -->
+                            <div class="mb-4">
+                                <p class="font-semibold">Progress: 
+                                    <span class="<?php echo $progress === 'completed' ? 'text-green-500' : ($progress === 'in_progress' ? 'text-yellow-500' : 'text-red-500'); ?>">
+                                        <?php echo ucfirst($progress); ?>
+                                    </span>
+                                </p>
+                                <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
+                                    <div class="bg-green-500 h-4 rounded-full"
+                                         style="width: <?php echo $progress === 'completed' ? '100%' : ($progress === 'in_progress' ? '50%' : '0%'); ?>;"></div>
                                 </div>
-                                <form action="updateProgress.php" method="POST" class="mt-4">
-                                    <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
-                                    <select name="progress" class="border rounded-md px-3 py-2">
-                                        <option value="not_started" <?php echo $progress === 'not_started' ? 'selected' : ''; ?>>Not Started</option>
-                                        <option value="in_progress" <?php echo $progress === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
-                                        <option value="completed" <?php echo $progress === 'completed' ? 'selected' : ''; ?>>Completed</option>
-                                    </select>
-                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2">Update</button>
-                                </form>
                             </div>
-                        <?php endforeach; ?>
+                            
+                            <!-- Update Progress Form -->
+                            <form action="updateProgress.php" method="POST" class="mt-4">
+    <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
+    <div class="flex items-center justify-between">
+        <select name="progress" class="border rounded-md px-3 py-2 mr-2 flex-grow">
+            <option value="not_started" <?php echo $progress === 'not_started' ? 'selected' : ''; ?>>Not Started</option>
+            <option value="in_progress" <?php echo $progress === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
+            <option value="completed" <?php echo $progress === 'completed' ? 'selected' : ''; ?>>Completed</option>
+        </select>
+
+        <div class="flex items-center space-x-2">
+            <?php if ($progress === 'completed'): ?>
+                <a href="generate_certificate.php?course_id=<?= $course['course_id']; ?>" id="get" class="bg-green-500 text-white rounded-lg hover:bg-green-400 px-4 py-2 transition duration-200">Certificate</a>
+            <?php endif; ?>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400 transition duration-200">Update</button>
+        </div>
+    </div>
+</form>
+                        </div>
                     </div>
-                <?php else: ?>
-                    <p class="text-gray-600 mt-4">You are not enrolled in any courses yet.</p>
-                <?php endif; ?>
-            </section>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-gray-600 mt-4 text-center">You are not enrolled in any courses yet.</p>
+        <?php endif; ?>
+    </div>
+</section>
 
 
         </main>

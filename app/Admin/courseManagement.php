@@ -54,6 +54,8 @@ $topTeachers = $stmtTopTeachers->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses Management</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
         /* Card styles */
         .card {
@@ -199,6 +201,9 @@ $topTeachers = $stmtTopTeachers->fetchAll(PDO::FETCH_ASSOC);
         .btn:hover {
             transform: translateY(-2px);
         }
+        #togglePendingCourses {
+            margin-left: 42%;
+        }
     </style>
 </head>
 
@@ -220,20 +225,26 @@ $topTeachers = $stmtTopTeachers->fetchAll(PDO::FETCH_ASSOC);
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Courses Management</h1>
+            <button id="togglePendingCourses" class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md">
+             Pending Courses
+        </button>
             <a href="../Authentication/Auth.php?action=logout">
                 <button class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-md text-lg font-semibold">Logout</button>
             </a>
+
+                        <!-- Dark Mode Toggle -->
+                        <button 
+    id="dark-mode-toggle" 
+    class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700" 
+    aria-label="Toggle dark mode">
+    <i id="mode-icon-moon" class="fas fa-moon" aria-hidden="true"></i>
+    <i id="mode-icon-brightness" class="fa-solid fa-sun" style="display: none;" aria-hidden="true"></i>
+</button>
         </div>
 
-        <!-- Dark Mode Toggle Button -->
-        <div class="mb-6 flex justify-end">
-            <button onclick="toggleDarkMode()" class="bg-gray-200 p-2 rounded-full dark:bg-gray-700">
-                <svg id="dark-light-toggle" class="toggle-btn text-gray-600 dark:text-gray-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path id="sun-icon" class="sun" d="M12 4.5A7.5 7.5 0 1 1 4.5 12 7.5 7.5 0 0 1 12 4.5ZM12 2a9.5 9.5 0=" />
-                    <path id="moon-icon" class="moon hidden" d="M12 4c-4.418 0-8 3.582-8 8 0 4.418 3.582 8 8 8s8-3.582 8-8c0-4.418-3.582-8-8-8zM12 14c-1.5 0-2.88-.5-4-1.36A5.983 5.983 0 0 1 12 7c2.05 0 3.98 1.2 5 2.86C14.88 13.5 13.5 14 12 14z" />
-                </svg>
-            </button>
-        </div>
+
+
+
 
 <!-- Total Courses and Top Teachers -->
 <section class="mb-8">
@@ -306,72 +317,102 @@ $topTeachers = $stmtTopTeachers->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 </section>
    <!-- Pending Courses Table -->
-   <section class="mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pending Courses</h2>
-            <?php if ($pendingCourses): ?>
-            <div class="card overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Title</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <?php foreach ($pendingCourses as $course): ?>
-                            <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($course['title']); ?></div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-600"><?php echo htmlspecialchars($course['teacher']); ?></div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="../Teacher/courseDetail.php?course_id=<?php echo $course['course_id']; ?>" 
-                                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
-                                        Review Course
-                                    </a>
-<!-- Approve Course -->
-<form method="POST" action="approveCourse.php">
-    <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
-    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-        Approve
-    </button>
-</form>
 
-<!-- Reject Course -->
-<form method="POST" action="rejectCourse.php">
-    <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
-    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
-        Reject
-    </button>
-</form>
 
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <?php else: ?>
-            <div class="card text-center py-8">
-                <p class="text-lg text-gray-600">No pending courses at the moment.</p>
-            </div>
-            <?php endif; ?>
-        </section>
+   
 
+<!-- Modal for Pending Courses -->
+<div id="pendingCoursesModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-3/4 lg:w-1/2">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pending Courses</h2>
+        <?php if ($pendingCourses): ?>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Title</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingCoursesBody" class="bg-white divide-y divide-gray-200">
+                    <?php foreach ($pendingCourses as $course): ?>
+                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($course['title']); ?></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-600"><?php echo htmlspecialchars($course['teacher']); ?></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="../Teacher/courseDetail.php?course_id=<?php echo $course['course_id']; ?>" 
+                               class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
+                                Review Course
+                            </a>
+                            <!-- Approve Course -->
+                            <form method="POST" action="approveCourse.php" style="display:inline;">
+                                <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                                    Approve
+                                </button>
+                            </form>
+                            <!-- Reject Course -->
+                            <form method="POST" action="rejectCourse.php" style="display:inline;">
+                                <input type="hidden" name="course_id" value="<?php echo $course['course_id']; ?>">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                                    Reject
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php else: ?>
+        <div class="text-center py-8">
+            <p class="text-lg text-gray-600">No pending courses at the moment.</p>
+        </div>
+        <?php endif; ?>
+        <button id="closeModal" class="mt-4 bg-red-500 hover:bg-red-400 px-4 py-2 rounded-md text-lg font-semibold">Close</button>
+    </div>
+</div>
 
     </div>
 
     <script>
-        function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle("dark-mode");
-            body.classList.toggle("light-mode");
-        }
+ // Dark mode toggle functionality
+const toggleButton = document.getElementById('dark-mode-toggle');
+const body = document.getElementById('body');
+const modeIconMoon = document.getElementById('mode-icon-moon');
+const modeIconBrightness = document.getElementById('mode-icon-brightness');
+
+toggleButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    body.classList.toggle('light-mode');
+
+    // Toggle the icon
+    if (body.classList.contains('dark-mode')) {
+        modeIconMoon.style.display = 'none';
+        modeIconBrightness.style.display = 'block';
+    } else {
+        modeIconMoon.style.display = 'block';
+        modeIconBrightness.style.display = 'none';
+    }
+});
+
+        document.getElementById('togglePendingCourses').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default anchor behavior
+    const pendingCoursesModal = document.getElementById('pendingCoursesModal');
+    pendingCoursesModal.classList.toggle('hidden'); // Toggle the hidden class
+});
+
+// Close the modal when the close button is clicked
+document.getElementById('closeModal').addEventListener('click', function() {
+    const pendingCoursesModal = document.getElementById('pendingCoursesModal');
+    pendingCoursesModal.classList.add('hidden'); // Hide the modal
+});
+        
     </script>
 </body>
 

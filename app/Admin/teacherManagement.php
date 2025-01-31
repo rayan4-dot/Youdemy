@@ -67,6 +67,7 @@ $allTeachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Management</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* Shared styles */
         .card {
@@ -256,6 +257,11 @@ $allTeachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background-color: #4a5568;
         }
 
+        #togglePendingTeachers{
+            margin-left: 54%;
+
+        }
+
     </style>
 </head>
 
@@ -276,51 +282,64 @@ $allTeachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="main-content">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Teacher Management</h1>
+            <!-- Button to Open Pending Teachers Modal -->
+<div class="mb-6">
+
+</div>
             <!-- Dark Mode Toggle -->
-            <button id="dark-mode-toggle" class="bg-gray-800 text-white px-4 py-2 rounded-md">
-                Toggle Dark Mode
-            </button>
+            <button id="togglePendingTeachers" class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md">
+        View Pending Teachers
+    </button>
+            <button 
+    id="dark-mode-toggle" 
+    class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700" 
+    aria-label="Toggle dark mode">
+    <i id="mode-icon-moon" class="fas fa-moon" aria-hidden="true"></i>
+    <i id="mode-icon-brightness" class="fa-solid fa-sun" style="display: none;" aria-hidden="true"></i>
+</button>
         </div>
 
-        <!-- Pending Teachers Table -->
-        <section class="mb-8">
-            <div class="table-container card">
-                <h3 class="text-xl font-semibold mb-4">Pending Teachers</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($pendingTeachers): ?>
-                            <?php foreach ($pendingTeachers as $teacher): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($teacher['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($teacher['email']); ?></td>
-                                    <td>Pending</td>
-                                    <td>
-                                        <form method="POST" action="teacherManagement.php">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($teacher['user_id']); ?>">
-                                            <button type="submit" name="action" value="approve" class="approve">Approve</button>
-                                            <button type="submit" name="action" value="suspend" class="suspend">Suspend</button>
-                                            <button type="submit" name="action" value="ban" class="ban" onclick="return confirm('Are you sure you want to ban this teacher?')">Ban</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+
+<!-- Modal for Pending Teachers -->
+<div id="pendingTeachersModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-3/4 lg:w-1/2">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pending Teachers</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingTeachersBody" class="bg-white divide-y divide-gray-200">
+                    <?php if ($pendingTeachers): ?>
+                        <?php foreach ($pendingTeachers as $teacher): ?>
                             <tr>
-                                <td colspan="4" class="text-center">No pending teachers found.</td>
+                                <td><?php echo htmlspecialchars($teacher['username']); ?></td>
+                                <td><?php echo htmlspecialchars($teacher['email']); ?></td>
+                                <td>
+                                    <form method="POST" action="teacherManagement.php">
+                                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($teacher['user_id']); ?>">
+                                        <button type="submit" name="action" value="approve" class="approve">Approve</button>
+                                        <button type="submit" name="action" value="suspend" class="suspend">Suspend</button>
+                                        <button type="submit" name="action" value="ban" class="ban" onclick="return confirm('Are you sure you want to ban this teacher?')">Ban</button>
+                                    </form>
+                                </td>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="3" class="text-center">No pending teachers found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+        <button id="closePendingTeachersModal" class="mt-4 bg-red-500 hover:bg-red-400 px-4 py-2 rounded-md text-lg font-semibold">Close</button>
+    </div>
+</div>
 
         <!-- All Teachers Table -->
         <section class="mb-8">
@@ -364,14 +383,39 @@ $allTeachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script>
-        // Dark mode toggle functionality
-        const toggleButton = document.getElementById('dark-mode-toggle');
-        const body = document.getElementById('body');
+// Dark mode toggle functionality
+const toggleButton = document.getElementById('dark-mode-toggle');
+const body = document.getElementById('body');
+const modeIconMoon = document.getElementById('mode-icon-moon');
+const modeIconBrightness = document.getElementById('mode-icon-brightness');
 
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            body.classList.toggle('light-mode');
-        });
+toggleButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    body.classList.toggle('light-mode');
+
+    // Toggle the icon
+    if (body.classList.contains('dark-mode')) {
+        modeIconMoon.style.display = 'none';
+        modeIconBrightness.style.display = 'block';
+    } else {
+        modeIconMoon.style.display = 'block';
+        modeIconBrightness.style.display = 'none';
+    }
+});
+
+
+    // Use the button to toggle the pending teachers modal
+    document.getElementById('togglePendingTeachers').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default anchor behavior
+        const pendingTeachersModal = document.getElementById('pendingTeachersModal');
+        pendingTeachersModal.classList.toggle('hidden'); // Toggle the hidden class
+    });
+
+    // Close the modal when the close button is clicked
+    document.getElementById('closePendingTeachersModal').addEventListener('click', function() {
+        const pendingTeachersModal = document.getElementById('pendingTeachersModal');
+        pendingTeachersModal.classList.add('hidden'); // Hide the modal
+    });
     </script>
 
 </body>
